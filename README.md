@@ -11,4 +11,3 @@ python -m unittest discover -s tests
 ```
 
 
-All merge conflict markers removed.
