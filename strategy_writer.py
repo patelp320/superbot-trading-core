@@ -12,7 +12,15 @@ def generate_strategy(name):
         "0DTE iron condor on QQQ/SPY every Thu/Fri",
         "High-IV put credit spread on earnings week",
         "Gap-and-Go penny stock scalp",
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+        "Mean reversion short on parabolic move",
+        "Earnings straddle play",
+        "Breakout rejection scalp",
+        "EMA 9/21 cross swing",
+        "Post-news momentum trade",
+=======
         "Mean reversion short on parabolic move"
+ >>>>>>> main
     ]
     template = random.choice(templates)
     code = f"""

@@ -24,6 +24,23 @@ def error_summary(path):
 trades = last_trades('../logs/fake_trades.log')
 errors = error_summary('../logs/learn.log')
 watchlist = ["AAPL", "TSLA", "SPY"]
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+strategy_perf = last_trades('../logs/strategy_performance.log')
+penny_log = '../logs/penny_trade_log.csv'
+
+def penny_summary(path):
+    if not os.path.exists(path):
+        return "No trades"
+    import pandas as pd
+    df = pd.read_csv(path, names=["Ticker", "Entry", "Exit", "Strategy", "Pct"], header=None)
+    winners = df[df['Pct'] > 0]
+    losers = df[df['Pct'] <= 0]
+    win_rate = round(len(winners) / len(df) * 100, 2) if len(df) else 0
+    avg_win = round(winners['Pct'].mean(), 2) if not winners.empty else 0
+    avg_loss = round(losers['Pct'].mean(), 2) if not losers.empty else 0
+    return f"Trades: {len(df)} | WinRate: {win_rate}% | AvgWin: {avg_win}% | AvgLoss: {avg_loss}%"
+=======
+ >>>>>>> main
 
 # Report summary
 summary = f"""
@@ -33,7 +50,13 @@ summary = f"""
 📂 Logs recorded: {len(os.listdir('../logs'))}
 Top Trades:\n{''.join(trades)}
 Tomorrow Watchlist: {', '.join(watchlist)}
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+Strategy Scores:\n{''.join(strategy_perf)}
 Errors:\n{''.join(errors)}
+Penny Summary: {penny_summary(penny_log)}
+=======
+Errors:\n{''.join(errors)}
+ >>>>>>> main
 """
 
 msg = MIMEText(summary)

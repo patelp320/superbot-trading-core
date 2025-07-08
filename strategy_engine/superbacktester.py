@@ -26,6 +26,23 @@ def main():
             results.append((score, file))
     results.sort(reverse=True)
 
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+    log_file = "../logs/strategy_performance.log"
+    with open(log_file, "a") as log:
+        for score, file in results:
+            log.write(f"[{datetime.utcnow()}] {file} score: {round(score,3)}\n")
+
+    # Prune bottom 20% from strategy directory
+    if results:
+        cutoff = max(1, int(len(results) * 0.2))
+        for _, file in results[-cutoff:]:
+            try:
+                os.remove(os.path.join(STRATEGY_DIR, file))
+            except FileNotFoundError:
+                pass
+
+=======
+ >>>>>>> main
     for _, file in results[5:]:
         target = os.path.join(LIVE_DIR, file)
         if os.path.exists(target):

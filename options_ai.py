@@ -11,6 +11,10 @@ log_file = "../logs/trades.log"
 os.makedirs("../logs", exist_ok=True)
 flow_data = load_flow_scores()
 vol_data = load_predictions()
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+HIGH_SHORT = {"TSLA": 0.05, "GME": 0.2}
+=======
+ >>>>>>> main
 
 def filter_candidate(ticker):
     try:
@@ -19,7 +23,16 @@ def filter_candidate(ticker):
             return False
         avg_vol = df["Volume"].tail(20).mean()
         vol = df["Close"].pct_change().std()
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+        today_vol = df["Volume"].iloc[-1]
+        rel_vol = today_vol / avg_vol if avg_vol else 0
+        gap = 0
+        if len(df) > 1:
+            gap = (df["Open"].iloc[-1] - df["Close"].iloc[-2]) / df["Close"].iloc[-2]
+        return avg_vol > 1_000_000 and vol > 0.02 and rel_vol > 1.2 and abs(gap) < 0.1
+=======
         return avg_vol > 1_000_000 and vol > 0.02
+ >>>>>>> main
     except Exception:
         return False
 
@@ -45,11 +58,20 @@ with open(log_file, "a") as log:
 
                 flow = flow_data.get(model["ticker"], 0)
                 vol_pred = vol_data.get(model["ticker"], 0.05)
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+                short_int = HIGH_SHORT.get(model["ticker"], 0)
+                if score + flow + short_int > 0.5 and vol_pred < 0.08 and filter_candidate(model["ticker"]):
+                    if sentiment(model["ticker"]) > 0.05:
+                        msg = (
+                            f"[{datetime.utcnow()}] 📈 Consider selling CSP on {model['ticker']} | "
+                            f"Alpha Score: {round(score, 3)} | Flow: {round(flow,2)} | Short: {short_int} | IVpred: {round(vol_pred,3)}\n"
+=======
                 if score + flow > 0.5 and vol_pred < 0.08 and filter_candidate(model["ticker"]):
                     if sentiment(model["ticker"]) > 0.05:
                         msg = (
                             f"[{datetime.utcnow()}] 📈 Consider selling CSP on {model['ticker']} | "
                             f"Alpha Score: {round(score, 3)} | Flow: {round(flow,2)} | IVpred: {round(vol_pred,3)}\n"
+ >>>>>>> main
                         )
                         log.write(msg)
 
