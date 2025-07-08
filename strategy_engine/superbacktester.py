@@ -26,6 +26,7 @@ def main():
             results.append((score, file))
     results.sort(reverse=True)
 
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
     log_file = "../logs/strategy_performance.log"
     with open(log_file, "a") as log:
         for score, file in results:
@@ -40,6 +41,8 @@ def main():
             except FileNotFoundError:
                 pass
 
+=======
+ >>>>>>> main
     for _, file in results[5:]:
         target = os.path.join(LIVE_DIR, file)
         if os.path.exists(target):

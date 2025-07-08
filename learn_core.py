@@ -19,6 +19,7 @@ MACRO_SYMBOLS = {
 MODEL_DIR = "../models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
 def fetch_macro_features():
     """Return latest macro indicators used as features."""
     features = {}
@@ -32,6 +33,8 @@ def fetch_macro_features():
 
 MACRO_FEATURES = fetch_macro_features()
 
+=======
+ >>>>>>> main
 def manage_models():
     models = []
     for file in os.listdir(MODEL_DIR):
@@ -127,6 +130,7 @@ def reinforcement_learning_module(data):
     # Placeholder for Q-learning based entry/exit logic
     pass
 
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
 
 def analyze_penny_trades(log_path="../logs/penny_trade_log.csv"):
     if not os.path.exists(log_path):
@@ -141,6 +145,8 @@ def analyze_penny_trades(log_path="../logs/penny_trade_log.csv"):
         f.write(f"[{datetime.utcnow()}] 📊 Penny trade analysis: {best_str}\n")
     return summary
 
+=======
+ >>>>>>> main
 if __name__ == "__main__":
     tickers = fetch_all_tickers()
     print(f"[{datetime.utcnow()}] 🚀 Starting scan of {len(tickers)} tickers...")
@@ -153,4 +159,7 @@ if __name__ == "__main__":
         time.sleep(2)
 
     manage_models()
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
     analyze_penny_trades()
+=======
+ >>>>>>> main
