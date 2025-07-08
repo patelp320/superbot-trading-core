@@ -15,7 +15,7 @@ summary = f"""
 
 ✅ Models trained: {len(os.listdir('../models'))}
 📂 Logs recorded: {len(os.listdir('../logs'))}
-🕒 Next scheduled run: every 10 minutes
+🕒 Next learn run in 10 minutes; other tasks hourly/daily
 """
 
 msg = MIMEText(summary)

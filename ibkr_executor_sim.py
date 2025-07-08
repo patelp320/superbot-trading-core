@@ -20,4 +20,4 @@ with open(log_file, "a") as f:
         f.write(msg + "\n")
 
 if __name__ == "__main__":
-    print("[SIM] Fake trade simulation complete.")
+    print("[SIM] Fake trade simulation completed.")
