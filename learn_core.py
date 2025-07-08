@@ -4,7 +4,6 @@ from datetime import datetime
 import pickle
 import os
 import requests
-import concurrent.futures
 from io import StringIO
 import time
 
@@ -25,7 +24,7 @@ def fetch_macro_features():
     for name, symbol in MACRO_SYMBOLS.items():
         try:
             df = yf.download(symbol, period="5d", interval="1d", progress=False)
-            features[name] = float(df["Close"].iloc[-1]) if not df.empty else 0.0
+            features[name] = float(df["Close"].iloc[-1].item()) if not df.empty else 0.0
         except Exception:
             features[name] = 0.0
     return features
@@ -151,12 +150,11 @@ if __name__ == "__main__":
     tickers = fetch_all_tickers()
     print(f"[{datetime.utcnow()}] 🚀 Starting scan of {len(tickers)} tickers...")
 
-    BATCH_SIZE = 100
-    for i in range(0, len(tickers), BATCH_SIZE):
-        batch = tickers[i:i + BATCH_SIZE]
-        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-            list(executor.map(process_ticker, batch))
-        time.sleep(2)
+    for i, ticker in enumerate(tickers, start=1):
+        process_ticker(ticker)
+        time.sleep(0.2)
+        if i % 100 == 0:
+            print(f"✅ Scanned {i}/{len(tickers)}")
 
     manage_models()
     analyze_penny_trades()
