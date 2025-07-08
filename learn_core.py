@@ -6,6 +6,7 @@ import os
 import requests
 from io import StringIO
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Additional macro symbols for feature engineering
 MACRO_SYMBOLS = {
@@ -146,15 +147,62 @@ def analyze_penny_trades(log_path="../logs/penny_trade_log.csv"):
         f.write(f"[{datetime.utcnow()}] 📊 Penny trade analysis: {best_str}\n")
     return summary
 
+# --- Fast multithreaded scanning utilities ---
+def scan_batch(tickers):
+    """Download a batch of tickers and return those trading under $5."""
+    try:
+        df = yf.download(
+            tickers=tickers,
+            period="30d",
+            interval="1d",
+            group_by="ticker",
+            auto_adjust=True,
+            progress=False,
+            threads=True,
+        )
+        results = {}
+        for ticker in tickers:
+            try:
+                data = df[ticker] if isinstance(df.columns, pd.MultiIndex) else df
+                if not data.empty:
+                    last_close = float(data["Close"].iloc[-1])
+                    if last_close < 5:
+                        results[ticker] = last_close
+            except Exception:
+                continue
+        return results
+    except Exception as e:
+        print(f"\u274c Batch failed: {e}")
+        return {}
+
+
+def chunk(lst, size):
+    """Yield successive chunks from list."""
+    for i in range(0, len(lst), size):
+        yield lst[i : i + size]
+
 if __name__ == "__main__":
     tickers = fetch_all_tickers()
-    print(f"[{datetime.utcnow()}] 🚀 Starting scan of {len(tickers)} tickers...")
+    tickers = [t for t in tickers if t.isalpha()]
+    print(
+        f"[{datetime.utcnow()}] 🚀 Starting fast scan of {len(tickers)} tickers using thread pool..."
+    )
 
-    for i, ticker in enumerate(tickers, start=1):
-        process_ticker(ticker)
-        time.sleep(0.2)
-        if i % 100 == 0:
-            print(f"✅ Scanned {i}/{len(tickers)}")
+    batches = list(chunk(tickers, 100))
+    total_found = 0
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        future_to_batch = {executor.submit(scan_batch, batch): batch for batch in batches}
+        for i, future in enumerate(as_completed(future_to_batch)):
+            batch_result = future.result()
+            for ticker in batch_result:
+                process_ticker(ticker)
+            total_found += len(batch_result)
+            print(
+                f"✅ Completed batch {i+1}/{len(batches)} — total tickers found: {total_found}"
+            )
+
+    print("✅ Scan complete.")
 
     manage_models()
     analyze_penny_trades()
