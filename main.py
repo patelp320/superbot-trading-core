@@ -75,13 +75,14 @@ schedule.every().hour.do(lambda: subprocess.call(["python3", "ai_modules/news_se
 schedule.every().day.at("07:00").do(lambda: subprocess.call(["python3", "ai_modules/macro_trend_ai.py"]))
 schedule.every().day.at("17:30").do(lambda: subprocess.call(["python3", "strategy_engine/superbacktester.py"]))
 schedule.every().day.at("02:00").do(lambda: subprocess.call(["python3", "strategy_engine/self_optimizer_ai.py"]))
- <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+
 schedule.every().day.at("08:45").do(lambda: subprocess.call(["python3", "penny_scanner_ai.py"]))
 schedule.every().day.at("09:35").do(lambda: subprocess.call(["python3", "penny_ai.py"]))
 schedule.every().day.at("16:15").do(lambda: subprocess.call(["python3", "learn_core.py"]))
 schedule.every().day.at("17:00").do(lambda: subprocess.call(["python3", "email_reporter.py"]))
-=======
+
  >>>>>>> main
+
 
 while True:
     schedule.run_pending()

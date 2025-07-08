@@ -1,5 +1,5 @@
 import random
- <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+
 from typing import Any
 
 MODELS = ["RandomForest", "GradientBoosted", "LSTM", "BERT"]
@@ -40,6 +40,8 @@ def weighted_ensemble_predict(features: Any = None, regime: str | None = None,
 if __name__ == "__main__":
     pred, conf = weighted_ensemble_predict()
     print(f"Ensemble prediction: {pred} (confidence {conf:.2f})")
+
+=======
 =======
 import random
 from typing import Any
