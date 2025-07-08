@@ -39,22 +39,21 @@ def repair():
     log("🔧 Running self_runner + auto_debugger...")
     subprocess.call(["python3", "self_runner.py"])
 
-log("✅ Scheduler started")
-learn()
+def main():
+    log("✅ Scheduler started")
+    learn()
 
-schedule.every(10).minutes.do(learn)
-schedule.every().hour.do(repair)
-schedule.every().day.at("16:30").do(predict)
-schedule.every().day.at("17:00").do(grade)
-schedule.every(3).hours.do(evolve)
-schedule.every(3).hours.do(report)
+    schedule.every(10).minutes.do(learn)
+    schedule.every().hour.do(repair)
+    schedule.every().day.at("16:30").do(predict)
+    schedule.every().day.at("17:00").do(grade)
+    schedule.every(3).hours.do(evolve)
+    schedule.every(3).hours.do(report)
 
-while True:
-    schedule.run_pending()
-    time.sleep(10)
+    while True:
+        schedule.run_pending()
+        time.sleep(10)
+
 
 if __name__ == "__main__":
-    learn()
-    schedule.run_pending()
-    while True:
-        time.sleep(10)
+    main()
