@@ -7,6 +7,7 @@ import requests
 from io import StringIO
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import csv
 
 # Additional macro symbols for feature engineering
 MACRO_SYMBOLS = {
@@ -32,6 +33,32 @@ def fetch_macro_features():
 
 MACRO_FEATURES = fetch_macro_features()
 
+
+def fallback_tickers():
+    """Return a static list of tickers if NASDAQ fetch fails."""
+    print("\ud83d\udcc4 Using local backup ticker list...")
+    return [
+        "GFAI",
+        "SNTI",
+        "COSM",
+        "HILS",
+        "NVOS",
+        "TOP",
+        "CVNA",
+        "TSLA",
+        "AAPL",
+        "QQQ",
+    ]
+
+
+def fetch_from_nasdaq():
+    """Fetch the current NASDAQ listed tickers."""
+    print(f"[{datetime.utcnow()}] \U0001f310 Fetching tickers from NASDAQ Trader...")
+    url = "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
+    df = pd.read_csv(StringIO(requests.get(url, timeout=10).text), sep="|")
+    tickers = df["Symbol"].dropna().tolist()
+    return tickers[:-1]
+
 def manage_models():
     models = []
     for file in os.listdir(MODEL_DIR):
@@ -45,15 +72,13 @@ def manage_models():
         os.remove(os.path.join(MODEL_DIR, file))
 
 def fetch_all_tickers():
+    """Get tickers from NASDAQ with a local fallback."""
     try:
-        print(f"[{datetime.utcnow()}] 🌐 Fetching tickers from NASDAQ Trader...")
-        url = "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
-        df = pd.read_csv(StringIO(requests.get(url, timeout=10).text), sep="|")
-        tickers = df["Symbol"].dropna().tolist()
-        return tickers[:-1]
+        tickers = fetch_from_nasdaq()
     except Exception as e:
-        print(f"[{datetime.utcnow()}] ❌ Ticker fetch failed: {e}")
-        return ["AAPL", "TSLA", "NVDA", "SPY", "MSFT"]
+        print(f"❌ Ticker fetch failed: {e}")
+        tickers = fallback_tickers()
+    return tickers
 
 def process_ticker(ticker):
     try:
@@ -190,12 +215,15 @@ if __name__ == "__main__":
 
     batches = list(chunk(tickers, 100))
     total_found = 0
+    features = {}
 
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    max_threads = min(8, os.cpu_count() or 4)
+    with ThreadPoolExecutor(max_workers=max_threads) as executor:
         future_to_batch = {executor.submit(scan_batch, batch): batch for batch in batches}
         for i, future in enumerate(as_completed(future_to_batch)):
             batch_result = future.result()
-            for ticker in batch_result:
+            for ticker, price in batch_result.items():
+                features[ticker] = price
                 process_ticker(ticker)
             total_found += len(batch_result)
             print(
@@ -203,6 +231,13 @@ if __name__ == "__main__":
             )
 
     print("✅ Scan complete.")
+
+    # Write scan results for debugging
+    with open("scan_results.csv", "w") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Ticker", "Last Close"])
+        for t, p in features.items():
+            writer.writerow([t, p])
 
     manage_models()
     analyze_penny_trades()
