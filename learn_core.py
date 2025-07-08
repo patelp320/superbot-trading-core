@@ -19,6 +19,7 @@ MACRO_SYMBOLS = {
 MODEL_DIR = "../models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
+
 def fetch_macro_features():
     """Return latest macro indicators used as features."""
     features = {}
@@ -31,6 +32,9 @@ def fetch_macro_features():
     return features
 
 MACRO_FEATURES = fetch_macro_features()
+
+
+ >>>>>>> main
 
 def manage_models():
     models = []
@@ -141,6 +145,9 @@ def analyze_penny_trades(log_path="../logs/penny_trade_log.csv"):
         f.write(f"[{datetime.utcnow()}] 📊 Penny trade analysis: {best_str}\n")
     return summary
 
+
+ >>>>>>> main
+
 if __name__ == "__main__":
     tickers = fetch_all_tickers()
     print(f"[{datetime.utcnow()}] 🚀 Starting scan of {len(tickers)} tickers...")
@@ -153,4 +160,4 @@ if __name__ == "__main__":
         time.sleep(2)
 
     manage_models()
-    analyze_penny_trades()
+

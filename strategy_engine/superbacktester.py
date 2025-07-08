@@ -26,6 +26,7 @@ def main():
             results.append((score, file))
     results.sort(reverse=True)
 
+
     log_file = "../logs/strategy_performance.log"
     with open(log_file, "a") as log:
         for score, file in results:
@@ -39,6 +40,9 @@ def main():
                 os.remove(os.path.join(STRATEGY_DIR, file))
             except FileNotFoundError:
                 pass
+
+
+ >>>>>>> main
 
     for _, file in results[5:]:
         target = os.path.join(LIVE_DIR, file)

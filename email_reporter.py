@@ -24,6 +24,7 @@ def error_summary(path):
 trades = last_trades('../logs/fake_trades.log')
 errors = error_summary('../logs/learn.log')
 watchlist = ["AAPL", "TSLA", "SPY"]
+
 strategy_perf = last_trades('../logs/strategy_performance.log')
 penny_log = '../logs/penny_trade_log.csv'
 
@@ -39,6 +40,11 @@ def penny_summary(path):
     avg_loss = round(losers['Pct'].mean(), 2) if not losers.empty else 0
     return f"Trades: {len(df)} | WinRate: {win_rate}% | AvgWin: {avg_win}% | AvgLoss: {avg_loss}%"
 
+=======
+=======
+ >>>>>>> main
+
+
 # Report summary
 summary = f"""
 📊 Superbot AI Status – {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC
@@ -47,9 +53,19 @@ summary = f"""
 📂 Logs recorded: {len(os.listdir('../logs'))}
 Top Trades:\n{''.join(trades)}
 Tomorrow Watchlist: {', '.join(watchlist)}
+
 Strategy Scores:\n{''.join(strategy_perf)}
 Errors:\n{''.join(errors)}
 Penny Summary: {penny_summary(penny_log)}
+=======
+ <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
+Strategy Scores:\n{''.join(strategy_perf)}
+Errors:\n{''.join(errors)}
+Penny Summary: {penny_summary(penny_log)}
+=======
+Errors:\n{''.join(errors)}
+ >>>>>>> main
+
 """
 
 msg = MIMEText(summary)
