@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 import random
 from ai_modules.ai_stop_loss_manager import trailing_stop
- <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
 from execution.position_sizer import size_position
 from execution.trade_logger import log_trade
 
@@ -12,8 +11,6 @@ def place_order(signal, size):
     price = signal.get("price", signal.get("premium", 0))
     executed_price = round(price * random.uniform(0.99, 1.01), 2)
     return executed_price
-=======
- >>>>>>> main
 
 log_file = "../logs/fake_trades.log"
 penny_log = "../logs/penny_trade_log.csv"
@@ -21,13 +18,9 @@ os.makedirs("../logs", exist_ok=True)
 
 capital = 10000.0
 daily_pnl = 0.0
- <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
 max_drawdown = -200.0
 open_positions = 0
 max_positions = 5
-=======
-max_drawdown = -100.0
- >>>>>>> main
 margin_limit = capital * 2
 used_margin = 0.0
 
@@ -42,7 +35,6 @@ mock_signals = [
 
 with open(log_file, "a") as f:
     for signal in mock_signals:
- <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
         if open_positions >= max_positions:
             print(f"[{datetime.utcnow()}] 🚫 Max positions reached. Skipping {signal['ticker']}")
             continue
@@ -51,16 +43,11 @@ with open(log_file, "a") as f:
         confidence = random.uniform(0.5, 1.0)
         size = size_position(capital, 0.02, confidence)
         cost = min(price * qty, size)
-=======
-        cost = signal.get("price", signal.get("premium", 0)) * signal.get("qty", 1)
-        cost = min(cost, capital * 0.02)
- >>>>>>> main
 
         if used_margin + abs(cost) > margin_limit:
             print(f"[{datetime.utcnow()}] ⚠️ Margin limit reached. Skipping {signal['ticker']}")
             continue
 
- <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
         executed_price = place_order(signal, size)
         exit_price = signal.get("exit")
         if exit_price:
@@ -71,13 +58,6 @@ with open(log_file, "a") as f:
         daily_pnl += pnl
         stop = trailing_stop(executed_price, random.uniform(0.5, 2))
         open_positions += 1
-=======
-        executed_price = round(signal.get("price", signal.get("premium", 0)) * random.uniform(0.98, 1.02), 2)
-        pnl = random.uniform(-0.05, 0.05) * cost
-        used_margin += abs(cost)
-        daily_pnl += pnl
-        stop = trailing_stop(executed_price, random.uniform(0.5, 2))
- >>>>>>> main
 
         msg = (
             f"[{datetime.utcnow()}] 💡 Simulated trade: {signal['action']} on {signal['ticker']} | "
@@ -89,10 +69,6 @@ with open(log_file, "a") as f:
         if signal.get("price", 0) < 5:
             with open(penny_log, "a") as pf:
                 pf.write(f"{signal['ticker']},{signal.get('price')},{exit_price},{signal['strategy']},{round((pnl / (signal.get('price') * signal.get('qty',1))) * 100,2) if exit_price else ''}\n")
-
-        if daily_pnl < max_drawdown:
-            print(f"[{datetime.utcnow()}] 🛑 Max drawdown reached. Halting trades.")
-            break
 
         if daily_pnl < max_drawdown:
             print(f"[{datetime.utcnow()}] 🛑 Max drawdown reached. Halting trades.")
