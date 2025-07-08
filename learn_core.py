@@ -57,7 +57,13 @@ def fetch_all_tickers():
 
 def process_ticker(ticker):
     try:
-        df = yf.download(ticker, period="30d", interval="1d", progress=False)
+        df = yf.download(
+            ticker,
+            period="30d",
+            interval="1d",
+            progress=False,
+            auto_adjust=True,
+        )
         if df.empty:
             return None
 
