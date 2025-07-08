@@ -11,6 +11,18 @@ import time
 MODEL_DIR = "../models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
+def manage_models():
+    models = []
+    for file in os.listdir(MODEL_DIR):
+        if file.endswith(".pkl"):
+            with open(os.path.join(MODEL_DIR, file), "rb") as f:
+                m = pickle.load(f)
+                score = m["avg_return"] / m["volatility"] if m["volatility"] else 0
+                models.append((score, file))
+    models.sort(reverse=True)
+    for _, file in models[5:]:
+        os.remove(os.path.join(MODEL_DIR, file))
+
 def fetch_all_tickers():
     try:
         print(f"[{datetime.utcnow()}] 🌐 Fetching tickers from NASDAQ Trader...")
@@ -24,7 +36,7 @@ def fetch_all_tickers():
 
 def process_ticker(ticker):
     try:
-        df = yf.download(ticker, period="5d", interval="15m", progress=False)
+        df = yf.download(ticker, period="30d", interval="1d", progress=False)
         if df.empty:
             return None
 
@@ -70,6 +82,14 @@ def process_ticker(ticker):
         print(f"[{datetime.utcnow()}] ❌ {ticker} failed: {e}")
         return None
 
+def walk_forward_optimization(model):
+    # Placeholder for future walk-forward optimization logic
+    pass
+
+def reinforcement_learning_module(data):
+    # Placeholder for Q-learning based entry/exit logic
+    pass
+
 if __name__ == "__main__":
     tickers = fetch_all_tickers()
     print(f"[{datetime.utcnow()}] 🚀 Starting scan of {len(tickers)} tickers...")
@@ -80,3 +100,5 @@ if __name__ == "__main__":
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
             list(executor.map(process_ticker, batch))
         time.sleep(2)
+
+    manage_models()

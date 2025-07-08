@@ -1,10 +1,36 @@
 import os
 import pickle
+from ai_modules.flow_analysis_ai import load_flow_scores
+from ai_modules.volatility_predictor_ai import load_predictions
 from datetime import datetime
+import yfinance as yf
+import requests
 
 model_dir = "../models"
 log_file = "../logs/trades.log"
 os.makedirs("../logs", exist_ok=True)
+flow_data = load_flow_scores()
+vol_data = load_predictions()
+
+def filter_candidate(ticker):
+    try:
+        df = yf.download(ticker, period="1mo", interval="1d", progress=False)
+        if df.empty:
+            return False
+        avg_vol = df["Volume"].tail(20).mean()
+        vol = df["Close"].pct_change().std()
+        return avg_vol > 1_000_000 and vol > 0.02
+    except Exception:
+        return False
+
+def sentiment(ticker):
+    try:
+        r = requests.get(f"https://query1.finance.yahoo.com/v10/finance/quoteSummary/{ticker}?modules=defaultKeyStatistics", timeout=5)
+        if r.ok:
+            return 0.1
+    except Exception:
+        pass
+    return 0.0
 
 print(f"[{datetime.utcnow()}] 📊 Checking model scores...")
 
@@ -16,10 +42,16 @@ with open(log_file, "a") as log:
                 model = pickle.load(f)
                 score = model["avg_return"] / model["volatility"] if model["volatility"] > 0 else 0
                 print(f"{model['ticker']} — Score: {round(score, 3)}")
-                
-                if score > 0.4:
-                    msg = f"[{datetime.utcnow()}] 📈 Consider selling CSP on {model['ticker']} | Alpha Score: {round(score, 3)}\n"
-                    log.write(msg)
+
+                flow = flow_data.get(model["ticker"], 0)
+                vol_pred = vol_data.get(model["ticker"], 0.05)
+                if score + flow > 0.5 and vol_pred < 0.08 and filter_candidate(model["ticker"]):
+                    if sentiment(model["ticker"]) > 0.05:
+                        msg = (
+                            f"[{datetime.utcnow()}] 📈 Consider selling CSP on {model['ticker']} | "
+                            f"Alpha Score: {round(score, 3)} | Flow: {round(flow,2)} | IVpred: {round(vol_pred,3)}\n"
+                        )
+                        log.write(msg)
 
 if __name__ == "__main__":
     print("[OPTIONS AI] Module ready for direct use.")
