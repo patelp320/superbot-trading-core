@@ -70,17 +70,13 @@ def process_ticker(ticker):
         print(f"[{datetime.utcnow()}] ❌ {ticker} failed: {e}")
         return None
 
-tickers = fetch_all_tickers()
-print(f"[{datetime.utcnow()}] 🚀 Starting scan of {len(tickers)} tickers...")
-
-BATCH_SIZE = 100
-for i in range(0, len(tickers), BATCH_SIZE):
-    batch = tickers[i:i + BATCH_SIZE]
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-        list(executor.map(process_ticker, batch))
-    time.sleep(2)
-
 if __name__ == "__main__":
     tickers = fetch_all_tickers()
-    for t in tickers[:10]:
-        process_ticker(t)
+    print(f"[{datetime.utcnow()}] 🚀 Starting scan of {len(tickers)} tickers...")
+
+    BATCH_SIZE = 100
+    for i in range(0, len(tickers), BATCH_SIZE):
+        batch = tickers[i:i + BATCH_SIZE]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+            list(executor.map(process_ticker, batch))
+        time.sleep(2)
