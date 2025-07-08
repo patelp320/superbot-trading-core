@@ -36,7 +36,7 @@ MACRO_FEATURES = fetch_macro_features()
 
 def fallback_tickers():
     """Return a static list of tickers if NASDAQ fetch fails."""
-    print("\ud83d\udcc4 Using local backup ticker list...")
+    print("📄 Using local backup ticker list...")
     return [
         "GFAI",
         "SNTI",
