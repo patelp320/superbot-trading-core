@@ -8,6 +8,13 @@ os.makedirs(STRATEGY_DIR, exist_ok=True)
 os.makedirs("../logs", exist_ok=True)
 
 def generate_strategy(name):
+    templates = [
+        "0DTE iron condor on QQQ/SPY every Thu/Fri",
+        "High-IV put credit spread on earnings week",
+        "Gap-and-Go penny stock scalp",
+        "Mean reversion short on parabolic move"
+    ]
+    template = random.choice(templates)
     code = f"""
 # Auto-generated strategy: {name}
 import random
@@ -15,7 +22,7 @@ from datetime import datetime
 
 def run():
     score = random.uniform(0.1, 0.8)
-    print(f"[{{datetime.utcnow()}}] 🚀 {name}: mock alpha score = {{round(score, 3)}}")
+    print(f"[{{datetime.utcnow()}}] 🚀 {name} ({template}): mock alpha score = {{round(score, 3)}}")
     return score
 """
     return code
