@@ -1,5 +1,4 @@
 import random
- <<<<<<< 274wyc-codex/add-upgrades-to-main.py-with-new-features
 from typing import Any
 
 MODELS = ["RandomForest", "GradientBoosted", "LSTM", "BERT"]
@@ -16,8 +15,11 @@ def model_predict(model: str, features: Any) -> float:
     return random.random()
 
 
-def weighted_ensemble_predict(features: Any = None, regime: str | None = None,
-                              performance: dict | None = None) -> tuple[int, float]:
+def weighted_ensemble_predict(
+    features: Any | None = None,
+    regime: str | None = None,
+    performance: dict | None = None,
+) -> tuple[int, float]:
     """Return ensemble vote and confidence."""
     weights = DEFAULT_WEIGHTS.copy()
     if regime == "CHOP":
@@ -40,24 +42,3 @@ def weighted_ensemble_predict(features: Any = None, regime: str | None = None,
 if __name__ == "__main__":
     pred, conf = weighted_ensemble_predict()
     print(f"Ensemble prediction: {pred} (confidence {conf:.2f})")
-=======
-import random
-from typing import Any
-
-MODELS = ["RandomForest", "XGBoost", "LSTM", "BERT"]
-
-
-def model_predict(model: str, features: Any) -> int:
-    """Dummy prediction for model."""
-    return random.choice([0, 1])
-
-
-def ensemble_predict(features: Any = None) -> int:
-    votes = [model_predict(m, features) for m in MODELS]
-    avg = sum(votes) / len(votes)
-    return 1 if avg >= 0.5 else 0
-
-
-if __name__ == "__main__":
-    print("Ensemble prediction:", ensemble_predict())
- >>>>>>> main
