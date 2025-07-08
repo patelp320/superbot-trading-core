@@ -10,3 +10,5 @@ Execute the unit tests using Python's built-in test runner:
 python -m unittest discover -s tests
 ```
 
+
+All merge conflict markers removed.
