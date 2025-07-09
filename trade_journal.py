@@ -1,17 +1,29 @@
 from datetime import datetime, timezone
 import os
+import csv
 
-JOURNAL_PATH = "../logs/trade_journal.md"
-os.makedirs("../logs", exist_ok=True)
+JOURNAL_DIR = "../logs"
+os.makedirs(JOURNAL_DIR, exist_ok=True)
 
-def journal_trade(ticker, reason, pnl, confidence):
-    entry = (
-        f"- {ticker} | PnL: {pnl:+.2f} | Confidence: {confidence:.2f}\n"
-        f"  Reason: {reason}\n"
-    )
-    with open(JOURNAL_PATH, "a") as f:
-        f.write(f"[{datetime.now(timezone.utc)}] \n{entry}\n")
+
+def journal_trade(symbol: str, strategy: str, fill: float, pnl: float, stop: float) -> None:
+    """Append a trade entry to a dated CSV journal."""
+    date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    path = os.path.join(JOURNAL_DIR, f"trade_journal_{date_str}.csv")
+    file_exists = os.path.exists(path)
+    with open(path, "a", newline="") as f:
+        writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(["time", "symbol", "strategy", "fill", "PnL", "stop"])
+        writer.writerow([
+            datetime.now(timezone.utc).isoformat(),
+            symbol,
+            strategy,
+            fill,
+            pnl,
+            stop,
+        ])
 
 if __name__ == "__main__":
-    journal_trade("TSLA", "Oversold bounce", 50, 0.84)
+    journal_trade("TSLA", "Oversold bounce", 10.5, 50, 8.0)
     print("Journal updated")
