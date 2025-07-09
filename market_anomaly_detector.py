@@ -1,6 +1,6 @@
 import random
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def is_ticker_halted(ticker: str) -> bool:
@@ -27,7 +27,7 @@ def check_anomalies(tickers: list[str]) -> list[str]:
         if is_ticker_halted(t) or flash_crash_detected(t):
             flagged.append(t)
     if flagged:
-        print(f"[{datetime.utcnow()}] \U0001f6a8 Market anomaly detected: {', '.join(flagged)}")
+        print(f"[{datetime.now(timezone.utc)}] \U0001f6a8 Market anomaly detected: {', '.join(flagged)}")
     return flagged
 
 

@@ -2,14 +2,14 @@ import schedule
 import time
 import subprocess
 import os
-from datetime import datetime, timedelta, time as dt_time
+from datetime import datetime, timedelta, time as dt_time, timezone
 
 log_dir = "../logs"
 os.makedirs(log_dir, exist_ok=True)
 log_file = os.path.join(log_dir, "learn.log")
 
 def log(msg):
-    timestamp = datetime.utcnow().isoformat()
+    timestamp = datetime.now(timezone.utc).isoformat()
     full = f"[{timestamp}] {msg}"
     print(full)
     with open(log_file, "a") as f:
@@ -47,7 +47,7 @@ def execute_trades():
     subprocess.call(["python3", "ibkr_executor_sim.py"])
 
 def in_market_hours():
-    now = datetime.utcnow() - timedelta(hours=4)
+    now = datetime.now(timezone.utc) - timedelta(hours=4)
     return dt_time(9, 30) <= now.time() <= dt_time(16, 0)
 
 def run_penny():

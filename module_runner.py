@@ -1,6 +1,6 @@
 import os
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 
 STRATEGY_DIR = "../strategy"
 LOG_FILE = "../logs/module_runner.log"
@@ -10,7 +10,7 @@ os.makedirs("../logs", exist_ok=True)
 
 def log(msg):
     with open(LOG_FILE, "a") as f:
-        entry = f"[{datetime.utcnow().isoformat()}] {msg}\n"
+        entry = f"[{datetime.now(timezone.utc).isoformat()}] {msg}\n"
         print(entry.strip())
         f.write(entry)
 

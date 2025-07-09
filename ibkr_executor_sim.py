@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 import random
 from ai_modules.ai_stop_loss_manager import trailing_stop
 from execution.position_sizer import size_position
@@ -36,16 +36,16 @@ mock_signals = [
 ]
 
 broker = choose_broker()
-print(f"[{datetime.utcnow()}] Using broker {broker}")
+print(f"[{datetime.now(timezone.utc)}] Using broker {broker}")
 flagged = check_anomalies([s["ticker"] for s in mock_signals])
 
 with open(log_file, "a") as f:
     for signal in mock_signals:
         if signal["ticker"] in flagged:
-            print(f"[{datetime.utcnow()}] ⚠️ {signal['ticker']} suspended due to anomaly")
+            print(f"[{datetime.now(timezone.utc)}] ⚠️ {signal['ticker']} suspended due to anomaly")
             continue
         if open_positions >= max_positions:
-            print(f"[{datetime.utcnow()}] 🚫 Max positions reached. Skipping {signal['ticker']}")
+            print(f"[{datetime.now(timezone.utc)}] 🚫 Max positions reached. Skipping {signal['ticker']}")
             continue
         price = signal.get("price", signal.get("premium", 0))
         qty = signal.get("qty", 1)
@@ -54,7 +54,7 @@ with open(log_file, "a") as f:
         cost = min(price * qty, size)
 
         if used_margin + abs(cost) > margin_limit:
-            print(f"[{datetime.utcnow()}] ⚠️ Margin limit reached. Skipping {signal['ticker']}")
+            print(f"[{datetime.now(timezone.utc)}] ⚠️ Margin limit reached. Skipping {signal['ticker']}")
             continue
 
         executed_price = place_order(signal, size)
@@ -69,7 +69,7 @@ with open(log_file, "a") as f:
         open_positions += 1
 
         msg = (
-            f"[{datetime.utcnow()}] 💡 Simulated trade: {signal['action']} on {signal['ticker']} | "
+            f"[{datetime.now(timezone.utc)}] 💡 Simulated trade: {signal['action']} on {signal['ticker']} | "
             f"Strategy: {signal['strategy']} | Filled at: ${executed_price} | PnL: {round(pnl,2)} | Stop: {stop}"
         )
         print(msg)
@@ -80,7 +80,7 @@ with open(log_file, "a") as f:
                 pf.write(f"{signal['ticker']},{signal.get('price')},{exit_price},{signal['strategy']},{round((pnl / (signal.get('price') * signal.get('qty',1))) * 100,2) if exit_price else ''}\n")
 
         if daily_pnl < max_drawdown:
-            print(f"[{datetime.utcnow()}] 🛑 Max drawdown reached. Halting trades.")
+            print(f"[{datetime.now(timezone.utc)}] 🛑 Max drawdown reached. Halting trades.")
             break
 
 if __name__ == "__main__":

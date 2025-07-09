@@ -1,5 +1,5 @@
 import yfinance as yf
-from datetime import datetime, time as dt_time
+from datetime import datetime, time as dt_time, timezone
 import os
 import requests
 import pandas as pd
@@ -81,13 +81,13 @@ with open(log_file, "a") as log:
                 if gap > 0.05 or short_int > 0.25 or sent > 0.05:
                     if check_entry(df):
                         msg = (
-                            f"[{datetime.utcnow()}] 🚀 {ticker} breakout! "
+                            f"[{datetime.now(timezone.utc)}] 🚀 {ticker} breakout! "
                             f"Volume: {round(vol_score, 1)}x | Move: +{round(price_jump * 100, 2)}%\n"
                         )
                         print(msg.strip())
                         log.write(msg)
         except Exception as e:
-            print(f"[{datetime.utcnow()}] ⚠️ {ticker} failed: {e}")
+            print(f"[{datetime.now(timezone.utc)}] ⚠️ {ticker} failed: {e}")
 
 
 if __name__ == "__main__":

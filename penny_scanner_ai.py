@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 
@@ -76,7 +76,7 @@ for ticker in TICKERS:
             'score': score
         })
     except Exception as e:
-        print(f"[{datetime.utcnow()}] ❌ {ticker} scan failed: {e}")
+        print(f"[{datetime.now(timezone.utc)}] ❌ {ticker} scan failed: {e}")
 
 results.sort(key=lambda x: x['score'], reverse=True)
 print(json.dumps(results, indent=2))

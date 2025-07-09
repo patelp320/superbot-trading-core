@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def fetch_dark_pool_volume(ticker: str) -> float:
@@ -26,7 +26,7 @@ def flag_unusual_activity(tickers: list[str]) -> list[str]:
         if dark_vol > 500_000 or oi > 50_000 or pcr > 1.5:
             flagged.append(t)
     if flagged:
-        print(f"[{datetime.utcnow()}] \U0001f50e Unusual flow: {', '.join(flagged)}")
+        print(f"[{datetime.now(timezone.utc)}] \U0001f50e Unusual flow: {', '.join(flagged)}")
     return flagged
 
 

@@ -1,7 +1,7 @@
 import random
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 TICKERS = sys.argv[1:] or ["AAPL", "TSLA", "SPY"]
 
@@ -16,7 +16,7 @@ def main():
     path = "../data/news_sentiment.json"
     with open(path, "w") as f:
         json.dump(scores, f)
-    print(f"[{datetime.utcnow()}] 📰 Sentiment scores saved -> {path}")
+    print(f"[{datetime.now(timezone.utc)}] 📰 Sentiment scores saved -> {path}")
 
 
 def load_scores() -> dict:

@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 grades_log = "../logs/strategy_grades.log"
 results_dir = "../logs/results"
@@ -24,6 +24,6 @@ with open(grades_log, "a") as log:
         if file.endswith(".txt"):
             avg_roi, win_rate = evaluate(file)
             status = "✅ PROMOTE" if avg_roi > 0.01 and win_rate > 0.6 else "❌ DEMOTE"
-            msg = f"[{datetime.utcnow()}] {file}: ROI={avg_roi}, WinRate={win_rate} → {status}"
+            msg = f"[{datetime.now(timezone.utc)}] {file}: ROI={avg_roi}, WinRate={win_rate} → {status}"
             print(msg)
             log.write(msg + "\n")

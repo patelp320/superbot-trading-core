@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 
 JOURNAL_PATH = "../logs/trade_journal.md"
@@ -10,7 +10,7 @@ def journal_trade(ticker, reason, pnl, confidence):
         f"  Reason: {reason}\n"
     )
     with open(JOURNAL_PATH, "a") as f:
-        f.write(f"[{datetime.utcnow()}] \n{entry}\n")
+        f.write(f"[{datetime.now(timezone.utc)}] \n{entry}\n")
 
 if __name__ == "__main__":
     journal_trade("TSLA", "Oversold bounce", 50, 0.84)

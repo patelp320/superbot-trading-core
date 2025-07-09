@@ -1,7 +1,7 @@
 import json
 import re
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 
 HEADERS = {"User-Agent": "superbot"}
 
@@ -45,8 +45,8 @@ def aggregate_trending() -> list[tuple[str, int]]:
     trending = sorted(counts.items(), key=lambda x: x[1], reverse=True)[:5]
     path = "../data/social_alpha.json"
     with open(path, "w") as f:
-        json.dump({"timestamp": datetime.utcnow().isoformat(), "trending": trending}, f)
-    print(f"[{datetime.utcnow()}] \U0001F4AC Social alpha saved -> {path}")
+        json.dump({"timestamp": datetime.now(timezone.utc).isoformat(), "trending": trending}, f)
+    print(f"[{datetime.now(timezone.utc)}] \U0001F4AC Social alpha saved -> {path}")
     return trending
 
 

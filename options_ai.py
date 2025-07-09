@@ -2,7 +2,7 @@ import os
 import pickle
 from ai_modules.flow_analysis_ai import load_flow_scores
 from ai_modules.volatility_predictor_ai import load_predictions
-from datetime import datetime
+from datetime import datetime, timezone
 import yfinance as yf
 import requests
 
@@ -38,7 +38,7 @@ def sentiment(ticker):
         pass
     return 0.0
 
-print(f"[{datetime.utcnow()}] 📊 Checking model scores...")
+print(f"[{datetime.now(timezone.utc)}] 📊 Checking model scores...")
 
 with open(log_file, "a") as log:
     for file in os.listdir(model_dir):
@@ -55,7 +55,7 @@ with open(log_file, "a") as log:
                 if score + flow + short_int > 0.5 and vol_pred < 0.08 and filter_candidate(model["ticker"]):
                     if sentiment(model["ticker"]) > 0.05:
                         msg = (
-                            f"[{datetime.utcnow()}] 📈 Consider selling CSP on {model['ticker']} | "
+                            f"[{datetime.now(timezone.utc)}] 📈 Consider selling CSP on {model['ticker']} | "
                             f"Alpha Score: {round(score, 3)} | Flow: {round(flow,2)} | Short: {short_int} | IVpred: {round(vol_pred,3)}\n"
                         )
                         log.write(msg)

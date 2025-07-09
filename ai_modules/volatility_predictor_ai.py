@@ -1,7 +1,7 @@
 import random
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 TICKERS = sys.argv[1:] or ["AAPL"]
 
@@ -16,7 +16,7 @@ def main():
     path = "../data/volatility.json"
     with open(path, "w") as f:
         json.dump(preds, f)
-    print(f"[{datetime.utcnow()}] ⚡ Volatility predictions saved -> {path}")
+    print(f"[{datetime.now(timezone.utc)}] ⚡ Volatility predictions saved -> {path}")
 
 
 def load_predictions() -> dict:
