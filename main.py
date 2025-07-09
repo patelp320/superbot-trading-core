@@ -16,6 +16,7 @@ def log(msg):
         f.write(full + "\n")
 
 def learn():
+    """Train models and generate the penny watchlist."""
     log("🧠 Running learn_core.py...")
     subprocess.call(["python3", "learn_core.py"])
 
@@ -56,8 +57,20 @@ def run_options_update():
     log("🎯 Running options_ai.py updates...")
     subprocess.call(["python3", "options_ai.py"])
 
-log("✅ Scheduler started")
-learn()
+
+def run_sequence():
+    """Run core modules once in a logical order."""
+    learn()
+    run_penny()
+    predict()
+    run_options_update()
+    grade()
+    evolve()
+    report()
+    execute_trades()
+    repair()
+
+
 
 schedule.every(10).minutes.do(learn)
 schedule.every().hour.do(repair)
@@ -80,12 +93,10 @@ schedule.every().day.at("09:35").do(lambda: subprocess.call(["python3", "penny_a
 schedule.every().day.at("16:15").do(lambda: subprocess.call(["python3", "learn_core.py"]))
 schedule.every().day.at("17:00").do(lambda: subprocess.call(["python3", "email_reporter.py"]))
 
-while True:
-    schedule.run_pending()
-    time.sleep(10)
-
 if __name__ == "__main__":
-    learn()
+    run_sequence()
+    log("🔄 Entering scheduler loop")
     schedule.run_pending()
     while True:
+        schedule.run_pending()
         time.sleep(10)
