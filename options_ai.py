@@ -38,27 +38,28 @@ def sentiment(ticker):
         pass
     return 0.0
 
-print(f"[{datetime.now(timezone.utc)}] 📊 Checking model scores...")
+def run():
+    print(f"[{datetime.now(timezone.utc)}] 📊 Checking model scores...")
+    with open(log_file, "a") as log:
+        for file in os.listdir(model_dir):
+            if file.endswith(".pkl"):
+                path = os.path.join(model_dir, file)
+                with open(path, "rb") as f:
+                    model = pickle.load(f)
+                    score = model["avg_return"] / model["volatility"] if model["volatility"] > 0 else 0
+                    print(f"{model['ticker']} — Score: {round(score, 3)}")
 
-with open(log_file, "a") as log:
-    for file in os.listdir(model_dir):
-        if file.endswith(".pkl"):
-            path = os.path.join(model_dir, file)
-            with open(path, "rb") as f:
-                model = pickle.load(f)
-                score = model["avg_return"] / model["volatility"] if model["volatility"] > 0 else 0
-                print(f"{model['ticker']} — Score: {round(score, 3)}")
-
-                flow = flow_data.get(model["ticker"], 0)
-                vol_pred = vol_data.get(model["ticker"], 0.05)
-                short_int = HIGH_SHORT.get(model["ticker"], 0)
-                if score + flow + short_int > 0.5 and vol_pred < 0.08 and filter_candidate(model["ticker"]):
-                    if sentiment(model["ticker"]) > 0.05:
-                        msg = (
-                            f"[{datetime.now(timezone.utc)}] 📈 Consider selling CSP on {model['ticker']} | "
-                            f"Alpha Score: {round(score, 3)} | Flow: {round(flow,2)} | Short: {short_int} | IVpred: {round(vol_pred,3)}\n"
-                        )
-                        log.write(msg)
+                    flow = flow_data.get(model["ticker"], 0)
+                    vol_pred = vol_data.get(model["ticker"], 0.05)
+                    short_int = HIGH_SHORT.get(model["ticker"], 0)
+                    if score + flow + short_int > 0.5 and vol_pred < 0.08 and filter_candidate(model["ticker"]):
+                        if sentiment(model["ticker"]) > 0.05:
+                            msg = (
+                                f"[{datetime.now(timezone.utc)}] 📈 Consider selling CSP on {model['ticker']} | "
+                                f"Alpha Score: {round(score, 3)} | Flow: {round(flow,2)} | Short: {short_int} | IVpred: {round(vol_pred,3)}\n"
+                            )
+                            log.write(msg)
 
 if __name__ == "__main__":
+    run()
     print("[OPTIONS AI] Module ready for direct use.")

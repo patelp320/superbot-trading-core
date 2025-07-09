@@ -20,3 +20,4 @@ python -m unittest discover -s tests
 - **Alt Data Ingest** – `ai_modules/alt_data_ingest.py` collects news from Benzinga, Unusual Whales, WhaleStream and FinBrain.
 - **Dark Pool & Options Flow** – `ai_modules/dark_pool_flow.py` flags unusual dark pool prints and options activity.
 - **Social Alpha Integration** – `ai_modules/social_alpha.py` scrapes r/WallStreetBets and StockTwits for trending tickers.
+- **Penny-Options Integration** – `penny_options_bot.py` cross-checks penny watchlists with options filters.
