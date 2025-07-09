@@ -48,3 +48,32 @@ if st.button("Check Compliance"):
         st.error("❌ Trade Blocked")
     else:
         st.success("✅ Trade Allowed")
+
+st.subheader("\ud83d\udcda Strategy Audit")
+if st.button("Audit Strategies"):
+    import strategy_auditor
+    strategy_auditor.audit_strategies()
+    st.success("\u2705 Strategy version log updated.")
+
+st.subheader("\ud83d\udcc8 Portfolio Visualizer")
+if st.button("Show Portfolio"):
+    from portfolio_visualizer import visualize_portfolio
+    fig, pnl = visualize_portfolio()
+    st.pyplot(fig)
+    st.metric("Unrealized PnL", f"${pnl:.2f}")
+
+st.subheader("\ud83e\udde6 Run Interactive Backtest")
+ticker_bt = st.text_input("Ticker")
+strat_bt = st.text_input("Strategy (e.g., alpha_1699889932)")
+start_bt = st.date_input("Start")
+end_bt = st.date_input("End")
+if st.button("Run Backtest"):
+    from interactive_backtester import run_backtest
+    result = run_backtest(ticker_bt, strat_bt, str(start_bt), str(end_bt))
+    st.write(result)
+
+st.subheader("\ud83d\udd01 Auto-Retrain Trigger")
+if st.button("Run Adaptive Retrainer"):
+    from adaptive_retrainer import scan_and_retrain
+    scan_and_retrain()
+    st.success("\u2705 Retraining triggered if needed.")
