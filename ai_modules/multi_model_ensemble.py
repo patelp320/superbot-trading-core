@@ -37,7 +37,7 @@ def weighted_ensemble_predict(
     model probabilities are then combined using a small meta learner.
     """
     weights = DEFAULT_WEIGHTS.copy()
-    if regime == "CHOP":
+    if regime == "CHOPPY":
         weights["CNN"] *= 1.5
         weights["CatBoost"] *= 1.2
     elif regime == "BULL":

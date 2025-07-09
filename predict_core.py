@@ -23,8 +23,11 @@ def predict():
         print(f"[{datetime.now(timezone.utc)}] 🔻 Mean reversion short signal")
     if vote:
         print(f"[{datetime.now(timezone.utc)}] 🧠 Ensemble vote suggests entry; confidence {confidence:.2f}")
+
+    level = "✅ High" if confidence >= 0.9 else "🟡 Medium" if confidence >= 0.7 else "⚠️ Low"
+    print(f"[{datetime.now(timezone.utc)}] {level} confidence {confidence:.2f}")
     if confidence < 0.7:
-        print(f"[{datetime.now(timezone.utc)}] ⚠️ Low confidence {confidence:.2f}. Skipping trade")
+        print(f"[{datetime.now(timezone.utc)}] Skipping trade")
         return
     if avoid_trade:
         print(f"[{datetime.now(timezone.utc)}] 🚩 Negative news detected. Avoiding trades")
