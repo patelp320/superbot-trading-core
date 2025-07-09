@@ -1,3 +1,5 @@
+"""TODO: Add module description for macro_trend_ai."""
+
 import random
 from datetime import datetime, timezone
 import os
