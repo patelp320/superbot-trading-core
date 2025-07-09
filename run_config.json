@@ -1,0 +1,6 @@
+{
+  "run_penny_ai": true,
+  "run_options_ai": true,
+  "run_strategy_writer": true,
+  "run_news_sentiment": true
+}
