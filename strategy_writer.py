@@ -32,29 +32,25 @@ def run():
 """
     return code
 
-timestamp = datetime.now(timezone.utc).strftime("%H%M%S")
-strat_name = f"alpha_{timestamp}"
-file_name = os.path.join(STRATEGY_DIR, f"{strat_name}.py")
-
-with open(file_name, "w") as f:
-    f.write(generate_strategy(strat_name))
-
-alpha_copy = os.path.join("../logs/alpha_strategies", f"{strat_name}.py")
-with open(alpha_copy, "w") as f:
-    f.write(open(file_name).read())
-
-with open(LOG_FILE, "a") as log:
-    log.write(f"[{datetime.now(timezone.utc)}] 🧠 Created new strategy: {strat_name}.py\n")
-
-print(f"✅ New strategy written: {strat_name}.py")
-
-if __name__ == "__main__":
+def run():
+    """Generate and save a new strategy module."""
     timestamp = datetime.now(timezone.utc).strftime("%H%M%S")
     strat_name = f"alpha_{timestamp}"
-    file_name = os.path.join("../strategy", f"{strat_name}.py")
+    file_name = os.path.join(STRATEGY_DIR, f"{strat_name}.py")
+
     with open(file_name, "w") as f:
         f.write(generate_strategy(strat_name))
+
     alpha_copy = os.path.join("../logs/alpha_strategies", f"{strat_name}.py")
     with open(alpha_copy, "w") as f:
         f.write(open(file_name).read())
+
+    with open(LOG_FILE, "a") as log:
+        log.write(
+            f"[{datetime.now(timezone.utc)}] 🧠 Created new strategy: {strat_name}.py\n"
+        )
+
     print(f"✅ New strategy written: {strat_name}.py")
+
+if __name__ == "__main__":
+    run()
