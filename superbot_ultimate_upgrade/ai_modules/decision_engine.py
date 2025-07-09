@@ -1,1 +1,1 @@
-# Uses news, tech, pattern, social, vote consensus
+# Placeholder: Smart AI voting on entry conditions

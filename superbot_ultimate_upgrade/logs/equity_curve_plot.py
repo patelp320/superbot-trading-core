@@ -1,1 +1,1 @@
-# Placeholder for equity_curve_plot
+# Generates equity curve graph

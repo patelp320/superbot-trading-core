@@ -1,1 +1,1 @@
-# Scrapes Reddit & Twitter tags + spikes
+# Reddit/Twitter spike scanner

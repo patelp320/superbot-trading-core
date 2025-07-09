@@ -1,1 +1,1 @@
-# Trains a classifier daily using trade journal outcomes
+# Placeholder: Self-learning model from trade history

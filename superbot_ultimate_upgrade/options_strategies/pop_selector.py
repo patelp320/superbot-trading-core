@@ -1,1 +1,1 @@
-# Placeholder for pop_selector
+# Filter for POP-based options contracts

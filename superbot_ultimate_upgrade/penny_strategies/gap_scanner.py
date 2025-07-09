@@ -1,1 +1,1 @@
-# Placeholder for gap_scanner
+# Detect gapping low float stocks with news

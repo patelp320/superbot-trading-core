@@ -1,1 +1,1 @@
-def vote(models): return sum(models) >= 3
+# Vote system for confirming penny entries
