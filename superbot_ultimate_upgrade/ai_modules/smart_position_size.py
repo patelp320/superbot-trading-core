@@ -1,1 +1,1 @@
-# Placeholder for smart_position_size
+# Placeholder: Position sizing based on confidence

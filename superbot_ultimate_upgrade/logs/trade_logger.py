@@ -1,1 +1,1 @@
-# Placeholder for trade_logger
+# Logs all trades into CSV or DB

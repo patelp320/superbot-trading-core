@@ -1,1 +1,1 @@
-# Supports ladder exit, trailing ATR, timeouts
+# Smart exit ladder + ATR trail logic
