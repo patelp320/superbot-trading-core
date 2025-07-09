@@ -21,3 +21,4 @@ python -m unittest discover -s tests
 - **Dark Pool & Options Flow** – `ai_modules/dark_pool_flow.py` flags unusual dark pool prints and options activity.
 - **Social Alpha Integration** – `ai_modules/social_alpha.py` scrapes r/WallStreetBets and StockTwits for trending tickers.
 - **Penny-Options Integration** – `penny_options_bot.py` cross-checks penny watchlists with options filters.
+- **Options Intelligence Toolkit** – `flow_scanner.py`, `delta_filter.py`, `smart_roller.py` and more provide scanning, delta selection, IV and POP filters, and ladder building.
