@@ -1,3 +1,5 @@
+"""TODO: Add module description for ai_stop_loss_manager."""
+
 from datetime import datetime, timedelta, timezone
 import random
 
