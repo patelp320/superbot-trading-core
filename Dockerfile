@@ -5,6 +5,6 @@ WORKDIR /app
 COPY . /app
 
 RUN pip install --upgrade pip && \
-    pip install schedule yfinance pandas
+    pip install -r requirements.txt
 
 CMD ["python3", "main.py"]
