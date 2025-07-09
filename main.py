@@ -4,6 +4,8 @@ import time
 import subprocess
 import os
 from datetime import datetime, timedelta, time as dt_time, timezone
+from commentary import describe
+from auto_backup import backup
 
 log_dir = "../logs"
 os.makedirs(log_dir, exist_ok=True)
@@ -99,6 +101,7 @@ schedule.every().day.at("17:00").do(lambda: subprocess.call(["python3", "email_r
 
 if __name__ == "__main__":
     run_sequence()
+    backup()
     log("🔄 Entering scheduler loop")
     schedule.run_pending()
     while True:
