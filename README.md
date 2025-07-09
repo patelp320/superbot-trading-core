@@ -25,6 +25,7 @@ pytest tests/
 - **GUI Control Panel** – `superbot_gui.py` offers a Tkinter interface for managing credentials and viewing mock trade ideas.
 - **Streamlit Dashboard** – `gui.py` runs in the browser for viewing predictions and trade logs.
 - **Equity Curve Watchdog** – `equity_curve_watchdog.py` pauses trading if the drawdown exceeds a configurable threshold.
+- **Expanded Ticker Scanning** – `learn_core.py` stores results in `data/full_scan_results.csv` and scans up to 5000 tickers.
 
 ## Running the Web Dashboard in Docker
 

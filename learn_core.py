@@ -23,6 +23,11 @@ MACRO_SYMBOLS = {
 MODEL_DIR = "../models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
+# Persist full scan results for analysis. This path points to a CSV database
+# that grows much larger than the previous `scan_results.csv` file.
+SCAN_RESULTS_FILE = "../data/full_scan_results.csv"
+os.makedirs(os.path.dirname(SCAN_RESULTS_FILE), exist_ok=True)
+
 # Limit the number of tickers scanned to avoid extremely long runtimes.
 # Uses the value configured in config.py
 MAX_TICKERS = config.MAX_SCAN_TICKERS
@@ -247,8 +252,9 @@ if __name__ == "__main__":
 
     print("✅ Scan complete.")
 
-    # Write scan results for debugging
-    with open("scan_results.csv", "w") as f:
+    # Write scan results for debugging. Store them in ``SCAN_RESULTS_FILE``
+    # so we keep a larger persistent database of scan data.
+    with open(SCAN_RESULTS_FILE, "w") as f:
         writer = csv.writer(f)
         writer.writerow(["Ticker", "Last Close"])
         for t, p in features.items():
