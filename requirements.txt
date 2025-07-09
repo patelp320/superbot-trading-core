@@ -10,3 +10,4 @@ stable-baselines3
 scikit-learn
 beautifulsoup4
 openai
+streamlit
