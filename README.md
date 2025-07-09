@@ -22,5 +22,9 @@ pytest tests/
 - **Social Alpha Integration** – `ai_modules/social_alpha.py` scrapes r/WallStreetBets and StockTwits for trending tickers.
 - **Penny-Options Integration** – `penny_options_bot.py` cross-checks penny watchlists with options filters.
 - **Options Intelligence Toolkit** – `flow_scanner.py`, `delta_filter.py`, `smart_roller.py` and more provide scanning, delta selection, IV and POP filters, and ladder building.
+ <<<<<<< codex/add-error-handling-for-credential-saving
+- **GUI Control Panel** – `superbot_gui.py` offers a Tkinter interface for managing credentials and viewing mock trade ideas.
+=======
 
-- **Equity Curve Watchdog** – `equity_curve_watchdog.py` pauses trading if the drawdown exceeds a configurable threshold.
+ - **Equity Curve Watchdog** – `equity_curve_watchdog.py` pauses trading if the drawdown exceeds a configurable threshold.
+ >>>>>>> main
