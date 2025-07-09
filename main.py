@@ -15,10 +15,12 @@ def log(msg):
     with open(log_file, "a") as f:
         f.write(full + "\n")
 
-def learn():
+def learn(max_tickers="100"):
     """Train models and generate the penny watchlist."""
     log("🧠 Running learn_core.py...")
-    subprocess.call(["python3", "learn_core.py"])
+    env = os.environ.copy()
+    env.setdefault("MAX_SCAN_TICKERS", str(max_tickers))
+    subprocess.call(["python3", "learn_core.py"], env=env)
 
 def predict():
     log("🔮 Running predict_core.py...")
@@ -60,7 +62,8 @@ def run_options_update():
 
 def run_sequence():
     """Run core modules once in a logical order."""
-    learn()
+    # Limit the initial scan so the pipeline completes quickly
+    learn(max_tickers="50")
     run_penny()
     predict()
     run_options_update()
