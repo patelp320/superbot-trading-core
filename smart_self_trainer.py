@@ -5,7 +5,8 @@ from datetime import datetime
 import pandas as pd
 from sklearn.ensemble import GradientBoostingClassifier
 
-DATA_PATH = "logs/trade_journal.csv"
+LOG_DIR = os.environ.get("LOG_DIR", "logs")
+DATA_PATH = os.path.join(LOG_DIR, "trade_journal.csv")
 MODEL_DIR = "models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
