@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 import logging; logging.basicConfig(level=logging.INFO)
 import smtplib, os
 from datetime import datetime, timezone
@@ -7,8 +9,8 @@ EMAIL_FROM = os.getenv("EMAIL_FROM")
 EMAIL_TO = os.getenv("EMAIL_TO")
 SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SMTP_USER = os.getenv("SMTP_USER")
-SMTP_PASS = os.getenv("SMTP_PASS")
+SMTP_USER = os.getenv("EMAIL_USER", os.getenv("SMTP_USER"))
+SMTP_PASS = os.getenv("EMAIL_PASS", os.getenv("SMTP_PASS"))
 
 def last_trades(path, n=5):
     if not os.path.exists(path):

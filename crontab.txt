@@ -1,0 +1,1 @@
+0 6 * * * python3 smart_self_trainer.py && python3 roll_manager.py && python3 email_reporter.py
