@@ -1,6 +1,6 @@
 import os
 import traceback
-import datetime
+from datetime import datetime, timezone
 
 STRATEGY_DIR = "../strategy"
 LOG_FILE = "../logs/self_fixes.log"
@@ -24,13 +24,13 @@ def fix_file(path, error_msg):
         if "==" in lines[i] or "return" in lines[i] or "=" in lines[i]:
             lines[i] = "# 🧠 auto-fixed: " + lines[i]
 
-    lines.insert(0, "# 🧠 Auto-debugger modified this file on " + datetime.datetime.utcnow().isoformat() + "\n")
+    lines.insert(0, "# 🧠 Auto-debugger modified this file on " + datetime.now(timezone.utc).isoformat() + "\n")
 
     with open(path, "w") as f:
         f.writelines(lines)
 
     with open(LOG_FILE, "a") as log:
-        log.write(f"[{datetime.datetime.utcnow()}] 🔧 Fixed {path} with msg: {error_msg}\n")
+        log.write(f"[{datetime.now(timezone.utc)}] 🔧 Fixed {path} with msg: {error_msg}\n")
 
 def main():
     for file in os.listdir(STRATEGY_DIR):

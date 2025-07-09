@@ -1,6 +1,6 @@
 import os
 import subprocess
-import datetime
+from datetime import datetime, timezone
 
 STRATEGY_DIR = "../strategy"
 LOG_FILE = "../logs/error_map.log"
@@ -14,7 +14,7 @@ for file in os.listdir(STRATEGY_DIR):
             subprocess.check_output(["python3", path], stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             with open(LOG_FILE, "a") as log:
-                log.write(f"[{datetime.datetime.utcnow()}] ❌ {file} failed:\n{e.output.decode()}\n")
+                log.write(f"[{datetime.now(timezone.utc)}] ❌ {file} failed:\n{e.output.decode()}\n")
             print(f"❌ {file} failed — sending to auto_debugger")
             subprocess.call(["python3", "auto_debugger.py"])
 

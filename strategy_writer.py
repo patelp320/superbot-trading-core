@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 import random
 
 STRATEGY_DIR = "../strategy"
@@ -22,16 +22,16 @@ def generate_strategy(name):
     code = f"""
 # Auto-generated strategy: {name}
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 
 def run():
     score = random.uniform(0.1, 0.8)
-    print(f"[{{datetime.utcnow()}}] 🚀 {name} ({template}): mock alpha score = {{round(score, 3)}}")
+    print(f"[{{datetime.now(timezone.utc)}}] 🚀 {name} ({template}): mock alpha score = {{round(score, 3)}}")
     return score
 """
     return code
 
-timestamp = datetime.utcnow().strftime("%H%M%S")
+timestamp = datetime.now(timezone.utc).strftime("%H%M%S")
 strat_name = f"alpha_{timestamp}"
 file_name = os.path.join(STRATEGY_DIR, f"{strat_name}.py")
 
@@ -39,12 +39,12 @@ with open(file_name, "w") as f:
     f.write(generate_strategy(strat_name))
 
 with open(LOG_FILE, "a") as log:
-    log.write(f"[{datetime.utcnow()}] 🧠 Created new strategy: {strat_name}.py\n")
+    log.write(f"[{datetime.now(timezone.utc)}] 🧠 Created new strategy: {strat_name}.py\n")
 
 print(f"✅ New strategy written: {strat_name}.py")
 
 if __name__ == "__main__":
-    timestamp = datetime.utcnow().strftime("%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%H%M%S")
     strat_name = f"alpha_{timestamp}"
     file_name = os.path.join("../strategy", f"{strat_name}.py")
     with open(file_name, "w") as f:

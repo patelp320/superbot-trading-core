@@ -1,7 +1,7 @@
 import random
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 TICKERS = sys.argv[1:] or ["AAPL", "TSLA"]
 
@@ -16,7 +16,7 @@ def main():
     path = "../data/flow_scores.json"
     with open(path, "w") as f:
         json.dump(scores, f)
-    print(f"[{datetime.utcnow()}] 💰 Flow scores saved -> {path}")
+    print(f"[{datetime.now(timezone.utc)}] 💰 Flow scores saved -> {path}")
 
 
 def load_flow_scores() -> dict:

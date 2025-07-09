@@ -1,5 +1,5 @@
 import smtplib, os
-from datetime import datetime
+from datetime import datetime, timezone
 from email.mime.text import MIMEText
 
 EMAIL_FROM = os.getenv("EMAIL_FROM")
@@ -41,7 +41,7 @@ def penny_summary(path):
 
 # Report summary
 summary = f"""
-📊 Superbot AI Status – {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC
+📊 Superbot AI Status – {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC
 
 ✅ Models trained: {len(os.listdir('../models'))}
 📂 Logs recorded: {len(os.listdir('../logs'))}

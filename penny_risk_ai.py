@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import pandas as pd
 
 
@@ -25,4 +25,4 @@ def manage_trade(df, entry_price):
     }
 
 if __name__ == '__main__':
-    print(f"[{datetime.utcnow()}] Penny risk manager ready.")
+    print(f"[{datetime.now(timezone.utc)}] Penny risk manager ready.")

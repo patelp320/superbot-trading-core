@@ -1,6 +1,6 @@
 import random
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from strategy_writer import generate_strategy
 
 STRATEGY_DIR = "../strategy"
@@ -16,7 +16,7 @@ def mutate_strategy(name: str):
 def main():
     for i in range(5):
         mutate_strategy(f"ga_{i}_{int(random.random()*1000)}")
-    print(f"[{datetime.utcnow()}] 🤖 Strategies mutated.")
+    print(f"[{datetime.now(timezone.utc)}] 🤖 Strategies mutated.")
 
 
 if __name__ == "__main__":

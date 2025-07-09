@@ -2,7 +2,7 @@ import os
 import importlib.util
 import shutil
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 
 STRATEGY_DIR = "../strategy"
 LIVE_DIR = "../live_strategies"
@@ -30,7 +30,7 @@ def main():
     log_file = "../logs/strategy_performance.log"
     with open(log_file, "a") as log:
         for score, file in results:
-            log.write(f"[{datetime.utcnow()}] {file} score: {round(score,3)}\n")
+            log.write(f"[{datetime.now(timezone.utc)}] {file} score: {round(score,3)}\n")
 
     # Prune bottom 20% from strategy directory
     if results:
@@ -47,7 +47,7 @@ def main():
     for _, file in results[:5]:
         shutil.copy(os.path.join(STRATEGY_DIR, file), os.path.join(LIVE_DIR, file))
 
-    print(f"[{datetime.utcnow()}] ⏪ Backtest complete. Top strategies updated.")
+    print(f"[{datetime.now(timezone.utc)}] ⏪ Backtest complete. Top strategies updated.")
 
 
 if __name__ == "__main__":

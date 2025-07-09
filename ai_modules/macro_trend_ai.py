@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 
 REGIMES = ["BULL", "BEAR", "CHOP"]
 
@@ -12,7 +12,7 @@ def main():
     regime = detect_regime()
     with open("../data/macro_regime.txt", "w") as f:
         f.write(regime)
-    print(f"[{datetime.utcnow()}] 🌎 Market regime -> {regime}")
+    print(f"[{datetime.now(timezone.utc)}] 🌎 Market regime -> {regime}")
 
 
 def current_regime() -> str:

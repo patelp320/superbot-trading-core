@@ -1,6 +1,6 @@
 import yfinance as yf
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone
 import pickle
 import os
 import requests
@@ -58,7 +58,7 @@ def fallback_tickers():
 
 def fetch_from_nasdaq():
     """Fetch the current NASDAQ listed tickers."""
-    print(f"[{datetime.utcnow()}] \U0001f310 Fetching tickers from NASDAQ Trader...")
+    print(f"[{datetime.now(timezone.utc)}] \U0001f310 Fetching tickers from NASDAQ Trader...")
     url = "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt"
     df = pd.read_csv(StringIO(requests.get(url, timeout=10).text), sep="|")
     tickers = df["Symbol"].dropna().tolist()
@@ -126,7 +126,7 @@ def process_ticker_data(ticker, df):
 
     model = {
         "ticker": ticker,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "avg_return": avg_return,
         "volatility": volatility,
         "is_penny": is_penny,
@@ -138,11 +138,11 @@ def process_ticker_data(ticker, df):
         "macro": macro,
     }
 
-    with open(f"{MODEL_DIR}/{ticker}_{datetime.utcnow().date()}.pkl", "wb") as f:
+    with open(f"{MODEL_DIR}/{ticker}_{datetime.now(timezone.utc).date()}.pkl", "wb") as f:
         pickle.dump(model, f)
 
     tag = "🪙 PENNY" if is_penny else "💼"
-    print(f"[{datetime.utcnow()}] ✅ {ticker} model saved. {tag}")
+    print(f"[{datetime.now(timezone.utc)}] ✅ {ticker} model saved. {tag}")
     return ticker
 
 
@@ -158,7 +158,7 @@ def process_ticker(ticker):
         )
         return process_ticker_data(ticker, df)
     except Exception as e:
-        print(f"[{datetime.utcnow()}] ❌ {ticker} failed: {e}")
+        print(f"[{datetime.now(timezone.utc)}] ❌ {ticker} failed: {e}")
         return None
 
 def walk_forward_optimization(model):
@@ -180,7 +180,7 @@ def analyze_penny_trades(log_path="../logs/penny_trade_log.csv"):
     best = summary.sort_values("avg_pct", ascending=False).head(3)
     best_str = "; ".join(f"{row.Ticker}:{round(row.avg_pct,2)}%" for _, row in best.iterrows())
     with open("../logs/learn.log", "a") as f:
-        f.write(f"[{datetime.utcnow()}] 📊 Penny trade analysis: {best_str}\n")
+        f.write(f"[{datetime.now(timezone.utc)}] 📊 Penny trade analysis: {best_str}\n")
     return summary
 
 # --- Fast multithreaded scanning utilities ---
@@ -224,7 +224,7 @@ if __name__ == "__main__":
     if len(tickers) > MAX_TICKERS:
         tickers = random.sample(tickers, MAX_TICKERS)
     print(
-        f"[{datetime.utcnow()}] 🚀 Starting fast scan of {len(tickers)} tickers using thread pool..."
+        f"[{datetime.now(timezone.utc)}] 🚀 Starting fast scan of {len(tickers)} tickers using thread pool..."
     )
 
     batches = list(chunk(tickers, 100))

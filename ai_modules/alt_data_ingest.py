@@ -1,6 +1,6 @@
 import json
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Placeholder API endpoints for various news and alternative data sources
 SOURCES = {
@@ -35,11 +35,11 @@ def parse_filings(text: str) -> list[str]:
 
 def collect_alt_data() -> dict:
     news = fetch_news()
-    payload = {"timestamp": datetime.utcnow().isoformat(), "news": news}
+    payload = {"timestamp": datetime.now(timezone.utc).isoformat(), "news": news}
     path = "../data/alt_data.json"
     with open(path, "w") as f:
         json.dump(payload, f)
-    print(f"[{datetime.utcnow()}] 📵 Alt data saved -> {path}")
+    print(f"[{datetime.now(timezone.utc)}] 📵 Alt data saved -> {path}")
     return payload
 
 
