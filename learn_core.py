@@ -8,6 +8,7 @@ from io import StringIO
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import csv
+import random
 
 # Additional macro symbols for feature engineering
 MACRO_SYMBOLS = {
@@ -19,6 +20,10 @@ MACRO_SYMBOLS = {
 
 MODEL_DIR = "../models"
 os.makedirs(MODEL_DIR, exist_ok=True)
+
+# Limit the number of tickers scanned to avoid extremely long runtimes.
+# Can be overridden via the MAX_SCAN_TICKERS environment variable.
+MAX_TICKERS = int(os.environ.get("MAX_SCAN_TICKERS", "1000"))
 
 def fetch_macro_features():
     """Return latest macro indicators used as features."""
@@ -80,7 +85,69 @@ def fetch_all_tickers():
         tickers = fallback_tickers()
     return tickers
 
+def process_ticker_data(ticker, df):
+    """Generate and persist model data using a pre-fetched dataframe."""
+    if df.empty:
+        return None
+
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(-1)
+    if "Close" not in df.columns or not pd.api.types.is_numeric_dtype(df["Close"]):
+        return None
+
+    df = df.dropna(subset=["Close", "Volume"])
+    if df.empty:
+        return None
+
+    latest_price = df["Close"].iloc[-1]
+    avg_volume = df["Volume"].tail(5).mean()
+    todays_volume = df["Volume"].iloc[-1]
+    vwap = (df["Close"] * df["Volume"]).sum() / df["Volume"].sum()
+    vwap_dist = latest_price - vwap
+    rel_volume = todays_volume / df["Volume"].mean()
+    gap_pct = 0.0
+    if len(df) > 1 and "Open" in df.columns:
+        prev_close = df["Close"].iloc[-2]
+        open_today = df["Open"].iloc[-1]
+        if prev_close:
+            gap_pct = (open_today - prev_close) / prev_close
+
+    # Skip tiny liquidity
+    if avg_volume < 50000:
+        return None
+
+    is_penny = latest_price < 5.00
+
+    df["Return"] = df["Close"].pct_change()
+    avg_return = df["Return"].mean()
+    volatility = df["Return"].std()
+
+    macro = MACRO_FEATURES
+
+    model = {
+        "ticker": ticker,
+        "timestamp": datetime.utcnow().isoformat(),
+        "avg_return": avg_return,
+        "volatility": volatility,
+        "is_penny": is_penny,
+        "price": latest_price,
+        "avg_volume": avg_volume,
+        "vwap_dist": vwap_dist,
+        "rel_volume": rel_volume,
+        "gap_pct": gap_pct,
+        "macro": macro,
+    }
+
+    with open(f"{MODEL_DIR}/{ticker}_{datetime.utcnow().date()}.pkl", "wb") as f:
+        pickle.dump(model, f)
+
+    tag = "🪙 PENNY" if is_penny else "💼"
+    print(f"[{datetime.utcnow()}] ✅ {ticker} model saved. {tag}")
+    return ticker
+
+
 def process_ticker(ticker):
+    """Fetch data for a single ticker then process it."""
     try:
         df = yf.download(
             ticker,
@@ -89,63 +156,7 @@ def process_ticker(ticker):
             progress=False,
             auto_adjust=True,
         )
-        if df.empty:
-            return None
-
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = df.columns.get_level_values(-1)
-        if "Close" not in df.columns or not pd.api.types.is_numeric_dtype(df["Close"]):
-            return None
-
-        df = df.dropna(subset=["Close", "Volume"])
-        if df.empty:
-            return None
-
-        latest_price = df["Close"].iloc[-1]
-        avg_volume = df["Volume"].tail(5).mean()
-        todays_volume = df["Volume"].iloc[-1]
-        vwap = (df["Close"] * df["Volume"]).sum() / df["Volume"].sum()
-        vwap_dist = latest_price - vwap
-        rel_volume = todays_volume / df["Volume"].mean()
-        gap_pct = 0.0
-        if len(df) > 1 and "Open" in df.columns:
-            prev_close = df["Close"].iloc[-2]
-            open_today = df["Open"].iloc[-1]
-            if prev_close:
-                gap_pct = (open_today - prev_close) / prev_close
-
-        # Skip tiny liquidity
-        if avg_volume < 50000:
-            return None
-
-        is_penny = latest_price < 5.00
-
-        df["Return"] = df["Close"].pct_change()
-        avg_return = df["Return"].mean()
-        volatility = df["Return"].std()
-
-        macro = MACRO_FEATURES
-
-        model = {
-            "ticker": ticker,
-            "timestamp": datetime.utcnow().isoformat(),
-            "avg_return": avg_return,
-            "volatility": volatility,
-            "is_penny": is_penny,
-            "price": latest_price,
-            "avg_volume": avg_volume,
-            "vwap_dist": vwap_dist,
-            "rel_volume": rel_volume,
-            "gap_pct": gap_pct,
-            "macro": macro,
-        }
-
-        with open(f"{MODEL_DIR}/{ticker}_{datetime.utcnow().date()}.pkl", "wb") as f:
-            pickle.dump(model, f)
-
-        tag = "🪙 PENNY" if is_penny else "💼"
-        print(f"[{datetime.utcnow()}] ✅ {ticker} model saved. {tag}")
-        return ticker
+        return process_ticker_data(ticker, df)
     except Exception as e:
         print(f"[{datetime.utcnow()}] ❌ {ticker} failed: {e}")
         return None
@@ -174,7 +185,7 @@ def analyze_penny_trades(log_path="../logs/penny_trade_log.csv"):
 
 # --- Fast multithreaded scanning utilities ---
 def scan_batch(tickers):
-    """Download a batch of tickers and return those trading under $5."""
+    """Download a batch of tickers and process those trading under $5."""
     try:
         df = yf.download(
             tickers=tickers,
@@ -193,6 +204,7 @@ def scan_batch(tickers):
                     last_close = float(data["Close"].iloc[-1])
                     if last_close < 5:
                         results[ticker] = last_close
+                        process_ticker_data(ticker, data)
             except Exception:
                 continue
         return results
@@ -209,6 +221,8 @@ def chunk(lst, size):
 if __name__ == "__main__":
     tickers = fetch_all_tickers()
     tickers = [t for t in tickers if t.isalpha()]
+    if len(tickers) > MAX_TICKERS:
+        tickers = random.sample(tickers, MAX_TICKERS)
     print(
         f"[{datetime.utcnow()}] 🚀 Starting fast scan of {len(tickers)} tickers using thread pool..."
     )
@@ -224,7 +238,6 @@ if __name__ == "__main__":
             batch_result = future.result()
             for ticker, price in batch_result.items():
                 features[ticker] = price
-                process_ticker(ticker)
             total_found += len(batch_result)
             print(
                 f"✅ Completed batch {i+1}/{len(batches)} — total tickers found: {total_found}"
@@ -238,6 +251,13 @@ if __name__ == "__main__":
         writer.writerow(["Ticker", "Last Close"])
         for t, p in features.items():
             writer.writerow([t, p])
+
+    # Export penny stock watchlist for other modules
+    os.makedirs("../logs", exist_ok=True)
+    watchlist_path = "../logs/penny_watchlist.txt"
+    with open(watchlist_path, "w") as f:
+        for ticker, price in sorted(features.items(), key=lambda x: x[1]):
+            f.write(f"{ticker}\n")
 
     manage_models()
     analyze_penny_trades()
