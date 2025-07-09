@@ -1,3 +1,4 @@
+import logging; logging.basicConfig(level=logging.INFO)
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timezone
@@ -6,6 +7,7 @@ import os
 import requests
 from io import StringIO
 import time
+import config
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import csv
 import random
@@ -22,8 +24,8 @@ MODEL_DIR = "../models"
 os.makedirs(MODEL_DIR, exist_ok=True)
 
 # Limit the number of tickers scanned to avoid extremely long runtimes.
-# Can be overridden via the MAX_SCAN_TICKERS environment variable.
-MAX_TICKERS = int(os.environ.get("MAX_SCAN_TICKERS", "1000"))
+# Uses the value configured in config.py
+MAX_TICKERS = config.MAX_SCAN_TICKERS
 
 def fetch_macro_features():
     """Return latest macro indicators used as features."""
