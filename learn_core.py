@@ -252,5 +252,12 @@ if __name__ == "__main__":
         for t, p in features.items():
             writer.writerow([t, p])
 
+    # Export penny stock watchlist for other modules
+    os.makedirs("../logs", exist_ok=True)
+    watchlist_path = "../logs/penny_watchlist.txt"
+    with open(watchlist_path, "w") as f:
+        for ticker, price in sorted(features.items(), key=lambda x: x[1]):
+            f.write(f"{ticker}\n")
+
     manage_models()
     analyze_penny_trades()
