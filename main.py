@@ -15,11 +15,7 @@ def log(msg):
     with open(log_file, "a") as f:
         f.write(full + "\n")
 
- <<<<<<< kvc0ne-codex/diagnose-main.py-hang-issue
 def learn(max_tickers="100"):
-=======
-def learn():
- >>>>>>> main
     """Train models and generate the penny watchlist."""
     log("🧠 Running learn_core.py...")
     env = os.environ.copy()
@@ -66,12 +62,8 @@ def run_options_update():
 
 def run_sequence():
     """Run core modules once in a logical order."""
- <<<<<<< kvc0ne-codex/diagnose-main.py-hang-issue
     # Limit the initial scan so the pipeline completes quickly
     learn(max_tickers="50")
-=======
-    learn()
- >>>>>>> main
     run_penny()
     predict()
     run_options_update()
