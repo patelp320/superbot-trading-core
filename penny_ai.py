@@ -4,7 +4,13 @@ import os
 import requests
 import pandas as pd
 
-tickers = ["GFAI", "MULN", "SOUN"]  # Delisted ones removed
+WATCHLIST_FILE = "../logs/penny_watchlist.txt"
+if os.path.exists(WATCHLIST_FILE):
+    with open(WATCHLIST_FILE) as f:
+        tickers = [line.strip() for line in f if line.strip()]
+else:
+    tickers = ["GFAI", "MULN", "SOUN"]  # default tickers
+
 high_short_interest = {"GFAI": 0.25, "MULN": 0.30, "SOUN": 0.28}
 log_file = "../logs/penny_trades.log"
 os.makedirs("../logs", exist_ok=True)
