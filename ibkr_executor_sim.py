@@ -4,6 +4,8 @@ import random
 from ai_modules.ai_stop_loss_manager import trailing_stop
 from execution.position_sizer import size_position
 from execution.trade_logger import log_trade
+from broker_failover import choose_broker
+from market_anomaly_detector import check_anomalies
 
 
 def place_order(signal, size):
@@ -33,8 +35,15 @@ mock_signals = [
     {"ticker": "NVDA", "strategy": "call_spread", "action": "open_spread", "details": "280/290"}
 ]
 
+broker = choose_broker()
+print(f"[{datetime.utcnow()}] Using broker {broker}")
+flagged = check_anomalies([s["ticker"] for s in mock_signals])
+
 with open(log_file, "a") as f:
     for signal in mock_signals:
+        if signal["ticker"] in flagged:
+            print(f"[{datetime.utcnow()}] ⚠️ {signal['ticker']} suspended due to anomaly")
+            continue
         if open_positions >= max_positions:
             print(f"[{datetime.utcnow()}] 🚫 Max positions reached. Skipping {signal['ticker']}")
             continue
