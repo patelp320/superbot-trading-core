@@ -62,33 +62,36 @@ def sentiment(ticker):
         pass
     return 0.0
 
-with open(log_file, "a") as log:
-    for ticker in tickers:
-        try:
-            df = yf.download(ticker, period="1d", interval="1m", progress=False)
-            if df.empty:
-                continue
+def run():
+    """Execute the penny stock scanning routine."""
+    with open(log_file, "a") as log:
+        for ticker in tickers:
+            try:
+                df = yf.download(ticker, period="1d", interval="1m", progress=False)
+                if df.empty:
+                    continue
 
-            vol_score, price_jump = score(df)
-            vol = volatility(df)
-            gap = gap_up(ticker)
-            sent = sentiment(ticker)
-            short_int = high_short_interest.get(ticker, 0)
+                vol_score, price_jump = score(df)
+                vol = volatility(df)
+                gap = gap_up(ticker)
+                sent = sentiment(ticker)
+                short_int = high_short_interest.get(ticker, 0)
 
-            rel_vol = vol_score
+                rel_vol = vol_score
 
-            if rel_vol > 2.0 and price_jump > 0.03 and vol > 0.02:
-                if gap > 0.05 or short_int > 0.25 or sent > 0.05:
-                    if check_entry(df):
-                        msg = (
-                            f"[{datetime.now(timezone.utc)}] 🚀 {ticker} breakout! "
-                            f"Volume: {round(vol_score, 1)}x | Move: +{round(price_jump * 100, 2)}%\n"
-                        )
-                        print(msg.strip())
-                        log.write(msg)
-        except Exception as e:
-            print(f"[{datetime.now(timezone.utc)}] ⚠️ {ticker} failed: {e}")
+                if rel_vol > 2.0 and price_jump > 0.03 and vol > 0.02:
+                    if gap > 0.05 or short_int > 0.25 or sent > 0.05:
+                        if check_entry(df):
+                            msg = (
+                                f"[{datetime.now(timezone.utc)}] 🚀 {ticker} breakout! "
+                                f"Volume: {round(vol_score, 1)}x | Move: +{round(price_jump * 100, 2)}%\n"
+                            )
+                            print(msg.strip())
+                            log.write(msg)
+            except Exception as e:
+                print(f"[{datetime.now(timezone.utc)}] ⚠️ {ticker} failed: {e}")
 
 
 if __name__ == "__main__":
+    run()
     print("[PENNY AI] Module ready for direct use.")

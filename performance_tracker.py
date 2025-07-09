@@ -3,7 +3,11 @@ from datetime import datetime
 
 
 def summary():
-    df = pd.read_csv("logs/trade_log.csv")
+    try:
+        df = pd.read_csv("logs/trade_log.csv")
+    except FileNotFoundError:
+        print("[PERFORMANCE] No trade log found.")
+        return
     df["Date"] = pd.to_datetime(df["Date"])
 
     today = datetime.now().date()
