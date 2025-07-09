@@ -1,3 +1,4 @@
+import logging; logging.basicConfig(level=logging.INFO)
 import os
 from datetime import datetime, timezone
 

@@ -1,5 +1,6 @@
 # predict_core.py — placeholder for prediction logic
 
+import logging; logging.basicConfig(level=logging.INFO)
 from datetime import datetime, timezone
 import random
 from ai_modules.news_sentiment_ai import load_scores

@@ -1,3 +1,4 @@
+import config
 import schedule
 import time
 import subprocess
@@ -19,7 +20,7 @@ def learn(max_tickers="100"):
     """Train models and generate the penny watchlist."""
     log("🧠 Running learn_core.py...")
     env = os.environ.copy()
-    env.setdefault("MAX_SCAN_TICKERS", str(max_tickers))
+    env.setdefault("MAX_SCAN_TICKERS", str(config.MAX_SCAN_TICKERS))
     subprocess.call(["python3", "learn_core.py"], env=env)
 
 def predict():

@@ -1,3 +1,4 @@
+import logging; logging.basicConfig(level=logging.INFO)
 import smtplib, os
 from datetime import datetime, timezone
 from email.mime.text import MIMEText
