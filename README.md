@@ -11,4 +11,9 @@ pip install -r requirements.txt
 python -m unittest discover -s tests
 ```
 
+## New Features
+
+- **Market Anomaly Detector** – checks for trading halts or flash crash conditions using `market_anomaly_detector.py`.
+- **Broker Failover** – `ibkr_executor_sim.py` now selects between IBKR, Alpaca, or a paper broker using `broker_failover.py`.
+
 
