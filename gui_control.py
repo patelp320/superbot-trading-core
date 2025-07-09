@@ -1,15 +1,34 @@
 import streamlit as st
- <<<<<<< codex/implement-trade-annotation-engine
+import json
+import os
+import time
+from datetime import datetime
+
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 import yfinance as yf
 
 from sector_ai import get_sector_analysis
+from performance_tracker import summary
+from alpha_discovery import discover_tickers
+from compliance_guard import is_blocked
+from auto_updater import run_update
+from strategy_mutator import mutate_all
 
-st.set_page_config(page_title="Superbot Control Center", layout="wide")
+st.set_page_config(page_title="Superbot Control", layout="wide")
 
-st.title("\U0001F6E0\ufe0f Superbot Control Center")
+st.title("\U0001F4BB Superbot Control Panel")
 
+# Module status overview
+st.subheader("\U0001F4E6 Module Status")
+if os.path.exists("log_status.json"):
+    with open("log_status.json") as f:
+        status = json.load(f)
+        st.write("Last Module Completed:", status.get("last_module", "unknown"))
+        st.write("Time:", time.ctime(os.path.getmtime("log_status.json")))
+
+# Real-Time price feed
 st.subheader("\U0001F4C9 Real-Time Price Feed")
 ticker_live = st.text_input("Enter ticker for live price:")
 if st.button("Get Live Price"):
@@ -25,6 +44,7 @@ if st.button("Get Live Price"):
     except Exception as e:
         st.error(f"Failed to fetch price: {e}")
 
+# Sector allocation and sentiment
 st.subheader("\U0001F4CA Sector Allocation Overview")
 sector_data = get_sector_analysis()
 df_sectors = pd.DataFrame(sector_data)
@@ -35,39 +55,16 @@ fig, ax = plt.subplots()
 plt.bar(df_sectors["Sector"], df_sectors["News Score"], color="green")
 st.pyplot(fig)
 
+# Trade reason log
 st.subheader("\U0001F9E0 Trade Reason Log")
 try:
     ann = pd.read_csv("logs/annotation_log.csv", names=["Time", "Ticker", "Strategy", "Conf", "Reason"])
     st.dataframe(ann.tail(10), use_container_width=True)
 except Exception:
     st.warning("No annotations found yet.")
-=======
-import json
-import os
- <<<<<<< codex/add-live-trade-table-to-gui_control.py
-import time
-from datetime import datetime
 
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-st.set_page_config(page_title="Superbot Control", layout="wide")
-
-st.title("\U0001F4BB Superbot Control Panel")
-
-st.subheader("\U0001F4E6 Module Status")
-if os.path.exists("log_status.json"):
-    with open("log_status.json") as f:
-        status = json.load(f)
-        st.write("Last Module Completed:", status.get("last_module", "unknown"))
-        st.write("Time:", time.ctime(os.path.getmtime("log_status.json")))
-
-st.subheader("\u2705 Compliance Check")
-st.write("All systems operating within defined parameters.")
-
-# Add after Compliance Check in gui_control.py
-st.subheader("\ud83d\udcc3 Live Trade History")
+# Live trade history table
+st.subheader("\U0001F4C3 Live Trade History")
 try:
     df = pd.read_csv("logs/trade_log.csv")
 
@@ -86,11 +83,10 @@ try:
         df = df[df["Strategy"] == selected_strategy]
 
     st.dataframe(df.sort_values("Date", ascending=False).head(25), use_container_width=True)
-
 except Exception as e:
     st.error(f"Could not load trade log: {e}")
 
-# PnL Section with real-time ticker display
+# Real-time PnL display
 try:
     df = pd.read_csv("logs/trade_log.csv")
     today = datetime.now().date()
@@ -101,6 +97,7 @@ try:
 except Exception:
     pass
 
+# Manual strategy test
 st.subheader("\U0001F9EA Manual Strategy Test")
 selected_test = st.text_input("Enter ticker to test (simulated):")
 if st.button("Run Strategy Test"):
@@ -108,6 +105,7 @@ if st.button("Run Strategy Test"):
     strategy_writer.run()
     st.success(f"Test logic run for {selected_test} (simulated)")
 
+# Strategy performance heatmap
 st.subheader("\U0001F525 Strategy Performance Heatmap")
 try:
     df["Date"] = pd.to_datetime(df["Date"])
@@ -119,17 +117,8 @@ try:
     st.pyplot(fig)
 except Exception:
     st.warning("No heatmap data available.")
-=======
-from performance_tracker import summary
-from alpha_discovery import discover_tickers
-from compliance_guard import is_blocked
-from auto_updater import run_update
-from strategy_mutator import mutate_all
 
-st.set_page_config(layout="wide")
-st.title("📊 Superbot Dashboard")
-
-# Mode Switch
+# Mode switch for paper/live trading
 st.subheader("⚙️ Trading Mode")
 mode = st.radio("Select mode:", ["paper", "live"])
 if st.button("Save Mode"):
@@ -137,11 +126,11 @@ if st.button("Save Mode"):
         json.dump({"mode": mode}, f)
     st.success(f"✅ Mode saved: {mode}")
 
-# PnL Tracking
+# PnL summary from performance tracker
 st.subheader("💰 PnL Summary")
 summary()
 
-# Strategy + Model Reload
+# Strategy and model reload controls
 st.subheader("🔄 Refresh Core")
 if st.button("Run Auto Updater"):
     run_update()
@@ -151,13 +140,13 @@ if st.button("Mutate Strategies"):
     mutate_all()
     st.success("✅ Mutation complete")
 
-# Alpha Suggestions
+# Alpha discovery suggestions
 st.subheader("📈 Alpha Discovery")
 if st.button("Discover Tickers"):
     tickers = discover_tickers()
     st.write("Suggested:", tickers)
 
-# Compliance Check
+# Compliance check helper
 st.subheader("🔒 Compliance Check")
 ticker_check = st.text_input("Enter ticker to check")
 price = st.number_input("Price", value=1.0)
@@ -167,22 +156,24 @@ if st.button("Check Compliance"):
         st.error("❌ Trade Blocked")
     else:
         st.success("✅ Trade Allowed")
- <<<<<<< codex/add-gui-controls-for-strategy-audit-and-visualization
 
-st.subheader("\ud83d\udcda Strategy Audit")
+# Strategy audit utilities
+st.subheader("\U0001F4DA Strategy Audit")
 if st.button("Audit Strategies"):
     import strategy_auditor
     strategy_auditor.audit_strategies()
     st.success("\u2705 Strategy version log updated.")
 
-st.subheader("\ud83d\udcc8 Portfolio Visualizer")
+# Portfolio visualization
+st.subheader("\U0001F4C8 Portfolio Visualizer")
 if st.button("Show Portfolio"):
     from portfolio_visualizer import visualize_portfolio
     fig, pnl = visualize_portfolio()
     st.pyplot(fig)
     st.metric("Unrealized PnL", f"${pnl:.2f}")
 
-st.subheader("\ud83e\udde6 Run Interactive Backtest")
+# Interactive backtesting
+st.subheader("\U0001F9E6 Run Interactive Backtest")
 ticker_bt = st.text_input("Ticker")
 strat_bt = st.text_input("Strategy (e.g., alpha_1699889932)")
 start_bt = st.date_input("Start")
@@ -192,12 +183,9 @@ if st.button("Run Backtest"):
     result = run_backtest(ticker_bt, strat_bt, str(start_bt), str(end_bt))
     st.write(result)
 
-st.subheader("\ud83d\udd01 Auto-Retrain Trigger")
+# Adaptive retraining trigger
+st.subheader("\U0001F501 Auto-Retrain Trigger")
 if st.button("Run Adaptive Retrainer"):
     from adaptive_retrainer import scan_and_retrain
     scan_and_retrain()
     st.success("\u2705 Retraining triggered if needed.")
-=======
- >>>>>>> main
- >>>>>>> main
- >>>>>>> main
