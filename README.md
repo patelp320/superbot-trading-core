@@ -25,3 +25,14 @@ pytest tests/
 - **GUI Control Panel** – `superbot_gui.py` offers a Tkinter interface for managing credentials and viewing mock trade ideas.
 - **Streamlit Dashboard** – `gui.py` runs in the browser for viewing predictions and trade logs.
 - **Equity Curve Watchdog** – `equity_curve_watchdog.py` pauses trading if the drawdown exceeds a configurable threshold.
+
+## Running the Web Dashboard in Docker
+
+Build the Docker image and start the Streamlit dashboard:
+
+```bash
+docker build -t superbot-auto:latest .
+docker run -it --rm -p 8501:8501 superbot-auto:latest
+```
+
+Then open <http://localhost:8501> in your browser to view the dashboard.
