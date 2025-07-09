@@ -1,18 +1,34 @@
+"""Async ticker scanning utility."""
+
 import asyncio
-import aiohttp
-import nest_asyncio
+from datetime import datetime
+from typing import Dict, List, Tuple
 
-# Example list of tickers; populate with many more as needed
-TICKERS = ["AAPL", "TSLA", "SPY"]
+import pandas as pd
+import yfinance as yf
 
-async def fetch(session, ticker):
-    async with session.get(f"https://finance.yahoo.com/quote/{ticker}") as resp:
-        await resp.text()
 
-async def main():
-    async with aiohttp.ClientSession() as session:
-        await asyncio.gather(*(fetch(session, t) for t in TICKERS))
+def _fetch_sync(ticker: str) -> pd.DataFrame:
+    """Synchronous wrapper around ``yf.download`` for a single ticker."""
+    return yf.download(ticker, period="1d", interval="1m", progress=False)
 
-if __name__ == "__main__":
-    nest_asyncio.apply()
-    asyncio.run(main())
+
+async def fetch_ticker(ticker: str) -> Tuple[str, pd.DataFrame]:
+    """Fetch price data for ``ticker`` asynchronously."""
+    loop = asyncio.get_running_loop()
+    df = await loop.run_in_executor(None, _fetch_sync, ticker)
+    ts = datetime.utcnow().strftime("%H:%M:%S")
+    print(f"[{ts}] ✅ {ticker} fetched")
+    return ticker, df
+
+
+async def scan_tickers(tickers: List[str]) -> Dict[str, pd.DataFrame]:
+    """Download data for a list of ``tickers`` concurrently."""
+    results = await asyncio.gather(*(fetch_ticker(t) for t in tickers))
+    return dict(results)
+
+
+if __name__ == "__main__":  # pragma: no cover - example usage
+    sample = ["TSLA", "AAPL", "MSFT"]
+    data = asyncio.run(scan_tickers(sample))
+    print({t: df.head() for t, df in data.items()})
